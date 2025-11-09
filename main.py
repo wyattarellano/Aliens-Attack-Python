@@ -50,13 +50,39 @@ class alien:
         self.y = y  # y position of alien
         self.health = health  # health of alien - natnum between 0 and 3
 
+    def __draw__(self, screen):
+        if self.health == 3:
+            color = GREEN
+        elif self.health == 2:
+            color = YELLOW
+        else:
+            color = RED
+        pygame.draw.rect(screen, color, (self.x, self.y, 20, 20)).fill()
+
+
 
 class rocket:
     def __init__(self, x):
         self.x = x  # x position of rocket since rocket does not move vertically
 
     def __draw__(self, screen):
-        pygame.draw.rect(screen, PINK, (self.x, ROCKET_Y, 40, 20))
+        pygame.draw.rect(screen, PINK, (self.x, ROCKET_Y, 40, 20)).fill()
+
+    def __moveLeft__(self):
+        self.x = self.x - 20
+    
+    def __moveRight__(self):
+        self.x = self.x + 20
+
+    def __processKey__(self):
+        key = pygame.key.get_pressed()
+        if key[pygame.K_LEFT]:
+            self.__moveLeft__()
+        elif key[pygame.K_RIGHT]:
+            self.__moveRight__()
+        else:
+            self
+
 
 
 class shot:
@@ -64,11 +90,30 @@ class shot:
         self.x = x  # x position of shot
         self.y = y  # y position of shot
 
+    def __draw__(self, screen):
+        pygame.draw.circle(screen, BLACK, (self.x, self.y), 10).fill
+
+
 #INITIAL VALUES
 INIT_LOA = [alien(50 + i * 30, 50, 3) for i in range(10)]
 INIT_ROCKET = rocket(SCREEN_WIDTH // 2)
 INIT_LOS = []
 INIT_WORLD = world(INIT_ROCKET, INIT_LOA, "right", INIT_LOS, INIT_T2S)
+
+#To draw a list of shots on screen
+def drawLOS(screen, shots: List[shot]):
+    for s in shots:
+        s.__draw__(screen)
+
+#To draw a list of aliens on screen
+def drawLOA(screen, aliens: List[alien]):
+    for a in aliens:
+        a.__draw__(screen)
+
+#To shot a rocket
+def shoot(rocket):
+    shot(rocket.x, rocket.y)
+
 
 
 
