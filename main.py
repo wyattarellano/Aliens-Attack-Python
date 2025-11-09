@@ -35,15 +35,7 @@ ROCKET_Y = SCREEN_HEIGHT - 60
 INIT_T2S = 0  # initial tics to shoot
 RESET_T2S = 60 #tics to wait between shots
 
-class world:
-    def __init__(self, rocket, aliens, dir, shots, tics2shoot):
-        self.rocket = rocket  # player rocket
-        self.aliens = aliens  # enemy aliens
-        self.dir = dir  # direction of aliens
-        self.shots = shots  # shots fired by player
-        self.tics2shoot = tics2shoot  # tics until player can shoot again
-
-
+#alien
 class alien:
     def __init__(self, x, y, health):
         self.x = x  # x position of alien
@@ -57,16 +49,20 @@ class alien:
             color = YELLOW
         else:
             color = RED
-        pygame.draw.rect(screen, color, (self.x, self.y, 20, 20)).fill()
+        pygame.draw.rect(screen, color, (self.x, self.y, 20, 20))
 
+#To draw a list of aliens on screen
+def drawLOA(screen, aliens: List[alien]):
+    for a in aliens:
+        a.__draw__(screen)
 
-
+#Rocket
 class rocket:
     def __init__(self, x):
         self.x = x  # x position of rocket since rocket does not move vertically
 
     def __draw__(self, screen):
-        pygame.draw.rect(screen, PINK, (self.x, ROCKET_Y, 40, 20)).fill()
+        pygame.draw.rect(screen, PINK, (self.x, ROCKET_Y, 40, 20))
 
     def __moveLeft__(self):
         self.x = self.x - 20
@@ -74,24 +70,53 @@ class rocket:
     def __moveRight__(self):
         self.x = self.x + 20
 
-    def __processKey__(self):
-        key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT]:
-            self.__moveLeft__()
-        elif key[pygame.K_RIGHT]:
-            self.__moveRight__()
-        else:
-            self
 
-
-
+#shot
 class shot:
     def __init__(self, x, y):
         self.x = x  # x position of shot
         self.y = y  # y position of shot
 
     def __draw__(self, screen):
-        pygame.draw.circle(screen, BLACK, (self.x, self.y), 10).fill
+        pygame.draw.circle(screen, BLACK, (self.x, self.y), 10)
+
+#To draw a list of shots on screen
+def drawLOS(screen, shots: List[shot]):
+    for s in shots:
+        s.__draw__(screen)
+
+#world
+class world:
+    def __init__(self, rocket: rocket, aliens: List[alien], dir, shots: List[shot], tics2shoot: int):
+        self.rocket = rocket  # player rocket
+        self.aliens = aliens  # enemy aliens
+        self.dir = dir  # direction of aliens
+        self.shots = shots  # shots fired by player
+        self.tics2shoot = tics2shoot  # tics until player can shoot again
+
+    #draw a world
+    def __draw__(self, screen):
+        self.rocket.__draw__(screen)
+        self.aliens.drawLOA(screen)
+        self.shots.drawLOS(screen)
+
+    #process a key for the world
+    def __processKey__(self):
+        key = pygame.key.get_pressed()
+        if key[pygame.K_LEFT]:
+            self.rocket.__moveLeft__()
+        elif key[pygame.K_RIGHT]:
+            self.rocket.__moveRight__()
+        elif key[pygame.K_SPACE]:
+            self.shots.insert(0, shot(self.rocket.x, self.rocket.y))
+        else:
+            self
+
+
+
+        
+
+
 
 
 #INITIAL VALUES
@@ -100,15 +125,9 @@ INIT_ROCKET = rocket(SCREEN_WIDTH // 2)
 INIT_LOS = []
 INIT_WORLD = world(INIT_ROCKET, INIT_LOA, "right", INIT_LOS, INIT_T2S)
 
-#To draw a list of shots on screen
-def drawLOS(screen, shots: List[shot]):
-    for s in shots:
-        s.__draw__(screen)
 
-#To draw a list of aliens on screen
-def drawLOA(screen, aliens: List[alien]):
-    for a in aliens:
-        a.__draw__(screen)
+
+
 
 #To shot a rocket
 def shoot(rocket):
