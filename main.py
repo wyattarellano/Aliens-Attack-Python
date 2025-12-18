@@ -37,10 +37,11 @@ RESET_T2S = 60 #tics to wait between shots
 
 #alien
 class alien:
-    def __init__(self, x, y, health):
+    def __init__(self, x, y, health, dir):
         self.x = x  # x position of alien
         self.y = y  # y position of alien
         self.health = health  # health of alien - natnum between 0 and 3
+        self.dir = dir
 
     def __draw__(self, screen):
         if self.health == 3:
@@ -50,6 +51,14 @@ class alien:
         else:
             color = RED
         pygame.draw.rect(screen, color, (self.x, self.y, 20, 20))
+
+    def __move__(self, dir):
+        if dir == "left":
+            self.x -= 1
+        elif dir == "right":
+            self.x += 1
+        else:
+            self.y += 20
 
 #To draw a list of aliens on screen
 def drawLOA(screen, aliens: List[alien]):
@@ -80,10 +89,15 @@ class shot:
     def __draw__(self, screen):
         pygame.draw.circle(screen, BLACK, (self.x, self.y), 10)
 
+    def __move__(self):
+        self.y -= 20
+
 #To draw a list of shots on screen
 def drawLOS(screen, shots: List[shot]):
     for s in shots:
         s.__draw__(screen)
+
+
 
 #world
 class world:
@@ -114,6 +128,7 @@ class world:
 
 
 
+
         
 
 
@@ -126,12 +141,6 @@ INIT_LOS = []
 INIT_WORLD = world(INIT_ROCKET, INIT_LOA, "right", INIT_LOS, INIT_T2S)
 
 
-
-
-
-#To shot a rocket
-def shoot(rocket):
-    shot(rocket.x, rocket.y)
 
 
 
